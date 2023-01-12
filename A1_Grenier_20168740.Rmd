@@ -1,0 +1,86 @@
+---
+title: "A1_Grenier_20168740"
+author: "Braeden Grenier"
+date: "2023-01-11"
+output: word_document
+---
+
+https://github.com/BradyGrenier/BIOL432_Assignment1
+
+# Setting up R Markdown and Loading Libraries
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(tidyr)
+library(data.table)
+library(gridExtra)
+library(lmtest)
+library(MuMIn)
+library(MASS)
+```
+
+# 1. Loading Measurements
+dataGenerato.R and volumeEstimato.R both need to be run in their entirety for the following R markdown chunks to run properly. 
+```{r}
+mymeasurements = read.csv("newmeasurements.csv")
+
+head(mymeasurements)
+tail(mymeasurements)
+str(mymeasurements)
+print(mymeasurements)
+```
+
+# 2. Sorting data by Species, Observer, Limb Volume
+```{r}
+arrange(mymeasurements, mymeasurements$OrganismList)
+arrange(mymeasurements, mymeasurements$ObserverList)
+arrange(mymeasurements, mymeasurements$limb_vol)
+```
+
+# 3. Average Volume by species
+```{r}
+maculatum = subset(mymeasurements, OrganismList=="Ambystoma maculatum")
+avgmac = mean(maculatum$limb_vol)
+
+mexicanum	= subset(mymeasurements, OrganismList=="Ambystoma mexicanum")
+avgmex = mean(mexicanum$limb_vol)
+
+tigrinum = subset(mymeasurements, OrganismList=="Ambystoma tigrinum")
+avgtig = mean(tigrinum$limb_vol)
+
+pyrrhogaster = subset(mymeasurements, OrganismList=="Cynops pyrrhogaster")
+avgpyr = mean(pyrrhogaster$limb_vol)
+
+ruber = subset(mymeasurements, OrganismList=="Pseudotriton ruber")
+avgrub = mean(ruber$limb_vol)
+
+data.frame(avgmac, avgmex, avgtig, avgpyr, avgrub)
+```
+
+# 4. Observations of Species and Observer
+```{r}
+obs_org = table(mymeasurements$ObserverList, mymeasurements$OrganismList)
+print(obs_org)
+```
+
+# 5. Box Plots
+```{r}
+ggplot(data = mymeasurements, mapping = aes(x = OrganismList, y = limb_vol)) + geom_boxplot()
+```
+
+# 6. Limb Histogram
+```{r}
+machist = ggplot(data = maculatum, mapping = aes(x=limb_vol)) + geom_histogram()
+mexhist = ggplot(data = mexicanum, mapping = aes(x=limb_vol)) + geom_histogram()
+tighist = ggplot(data = tigrinum, mapping = aes(x=limb_vol)) + geom_histogram()
+pyrhist = ggplot(data = pyrrhogaster, mapping = aes(x=limb_vol)) + geom_histogram()
+rubhist =ggplot(data = ruber, mapping = aes(x=limb_vol)) + geom_histogram()
+
+grid.arrange(machist, mexhist, tighist, pyrhist, rubhist, nrow = 2)
+?grid.arrange
+```
+
